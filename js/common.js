@@ -22,3 +22,18 @@ function tip(msg) {
 //--------------------------------------------------
 //根路径
 axios.defaults.baseURL = 'http://ajax-api.itheima.net'
+
+//--------------------------------------------------
+//用户名展示和退出
+const uname = document.querySelector('.media .font-weight-bold')
+const utoken = document.querySelector('#logout')
+if (uname) {
+  uname.innerHTML = localStorage.getItem('user-name')
+}
+if (utoken) {
+  utoken.addEventListener('click', () => {
+    localStorage.removeItem('user-name')
+    localStorage.removeItem('user-token')
+    location.href = './login.html'
+  })
+}
