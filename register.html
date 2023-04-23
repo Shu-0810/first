@@ -106,8 +106,9 @@
 
       try {
         const res = await axios.post('/register', data)
-        console.log(res.data.message);
-        tip(res.data.message)
+        console.log(res);
+        console.log(res.message);
+        tip(res.message)
         setTimeout(() => {
           location.href = './login.html'
         }, 3000)
