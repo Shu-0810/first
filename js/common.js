@@ -27,6 +27,7 @@ axios.defaults.baseURL = 'http://ajax-api.itheima.net'
 
 
 
+
 //拦截器
 // 添加请求拦截器
 axios.interceptors.request.use(function (config) {

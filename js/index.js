@@ -1,11 +1,4 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  // const token = localStorage.getItem('user-token')
-  // const res = await axios.get('/dashboard', {
-  //   headers: {
-  //     'Authorization': token
-  //   }
-  // })
-
   //获取数据
   const { data } = await axios.get('/dashboard')
   console.log(data);
@@ -13,14 +6,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   for (let k in data.overview) {
     document.querySelector(`[name=${k}]`).innerHTML = data.overview[k]
   }
-  const yearMonth = data.year.map(item => item.month)
-  const yearSalary = data.year.map(item => item.salary)
-  console.log(yearMonth);
-  console.log(yearSalary);
-  lineEcharts(yearMonth, yearSalary)
+  //渲染折线图
+  lineEcharts(data)
+  //渲染饼图
+  pieEcharts(data)
 })
 
-function lineEcharts(yearMonth, yearSalary) {
+function lineEcharts(data) {
   var chartDom = document.getElementById('line');
   var myChart = echarts.init(chartDom);
   var option;
@@ -40,7 +32,7 @@ function lineEcharts(yearMonth, yearSalary) {
     },
     xAxis: {
       type: 'category',
-      data: yearMonth,
+      data: data.year.map(item => item.month),
       axisLine: {
         lineStyle: {
           type: 'dashed'
@@ -50,9 +42,22 @@ function lineEcharts(yearMonth, yearSalary) {
     yAxis: {
       type: 'value'
     },
+    color: {
+      type: 'linear',
+      x: 0,
+      y: 0,
+      x2: 1,
+      y2: 1,
+      colorStops: [{
+        offset: 0, color: '#8bbffa' // 0% 处的颜色
+      }, {
+        offset: 1, color: 'blue' // 100% 处的颜色
+      }],
+      global: false // 缺省为 false
+    },
     series: [
       {
-        data: yearSalary,
+        data: data.year.map(item => item.salary),
         type: 'line',
         smooth: true,
         areaStyle: {
@@ -71,6 +76,83 @@ function lineEcharts(yearMonth, yearSalary) {
             global: false // 缺省为 false
           }
         }
+      }
+    ]
+  };
+
+  option && myChart.setOption(option);
+}
+
+function pieEcharts(data) {
+  var chartDom = document.getElementById('salary');
+  var myChart = echarts.init(chartDom);
+  var option;
+
+  option = {
+    //标题及标题位置
+    title: {
+      text: '班级薪资分布',
+      top: 10,
+      left: 10
+    },
+    //提示
+    tooltip: {
+      trigger: 'item'
+    },
+    //图例位置
+    legend: {
+      bottom: 15,
+      left: 'center'
+    },
+    //调色盘
+    color: ['#ffa314', '#4096ff', '#20aaff', '#19b099'],
+    series: [
+      {
+        name: '班级薪资分布',
+        type: 'pie',
+        //第一个内半径，第二个外半径
+        radius: ['50%', '65%'],
+        //定位位置
+        center: ['50%', '50%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          //圆角
+          borderRadius: 15,
+          //边框
+          borderColor: '#fff',
+          //每项之间的距离
+          borderWidth: 4
+        },
+        //文本标签
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            // show: true,
+            show: false,
+            fontSize: 40,
+            fontWeight: 'bold'
+          }
+        },
+        //文本连接线
+        labelLine: {
+          show: false
+        },
+        // data: [
+        //   { value: 1048, name: 'Search Engine' },
+        //   { value: 735, name: 'Direct' },
+        //   { value: 580, name: 'Email' },
+        //   { value: 484, name: 'Union Ads' },
+        //   { value: 300, name: 'Video Ads' }
+        // ]
+        data: data.salaryData.map(item => {
+          return {
+            value: item.g_count + item.b_count,
+            name: item.label
+          }
+        })
       }
     ]
   };
