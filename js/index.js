@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   lineEcharts(data)
   //渲染饼图
   pieEcharts(data)
+  //渲染每组期望薪资
+  hopeEcharts(data)
+  //渲染两个饼图
+  twoEcharts(data)
+  //渲染地图
+  chinaEcharts(data)
 })
 
 function lineEcharts(data) {
@@ -158,4 +164,281 @@ function pieEcharts(data) {
   };
 
   option && myChart.setOption(option);
+}
+
+function hopeEcharts(data) {
+  var chartDom = document.getElementById('lines');
+  var myChart = echarts.init(chartDom);
+  var option;
+  console.log(data.groupData[1]);
+  option = {
+    xAxis: {
+      type: 'category',
+      axisLine: {
+        //x轴的虚线
+        lineStyle: {
+          type: 'dashed',
+          color: 'gary'
+        }
+      },
+      data: data.groupData[1].map(item => item.name)
+    },
+    yAxis: {
+      type: 'value',
+      //图上的虚线
+      splitLine: {
+        show: true,
+        lineStyle: {
+          type: 'dashed'
+        }
+      }
+    },
+    tooltip: {
+      trigger: 'item'
+    },
+    series: [
+      {
+        name: '期望薪资',
+        data: data.groupData[1].map(item => item.hope_salary),
+        type: 'bar',
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [
+            {
+              offset: 0,
+              color: '#2fb5a0' // 0% 处的颜色
+            },
+            {
+              offset: 1,
+              color: '#e8f8f4' // 100% 处的颜色
+            }
+          ],
+          global: false // 缺省为 false
+        }
+      },
+      {
+        name: '实际薪资',
+        data: data.groupData[1].map(item => item.salary),
+        type: 'bar',
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [
+            {
+              offset: 0,
+              color: '#409cf6' // 0% 处的颜色
+            },
+            {
+              offset: 1,
+              color: '#cce7fe' // 100% 处的颜色
+            }
+          ],
+          global: false // 缺省为 false
+        }
+      }
+    ]
+  };
+
+  option && myChart.setOption(option);
+
+  document.querySelector('#btns').addEventListener('click', e => {
+    if (e.target.tagName === 'BUTTON') {
+      const blue = document.querySelector('.btn-blue')
+      if (blue) blue.classList.remove('btn-blue')
+      e.target.classList.add('btn-blue')
+      // console.log(e.target.innerHTML);
+
+      //更新图表
+      const group = e.target.innerHTML
+      option.xAxis.data = data.groupData[group].map(item => item.name)
+      option.series[0].data = data.groupData[group].map(item => item.hope_salary)
+      option.series[1].data = data.groupData[group].map(item => item.salary)
+      option && myChart.setOption(option);
+    }
+  })
+}
+
+function twoEcharts(data) {
+  var chartDom = document.getElementById('gender');
+  var myChart = echarts.init(chartDom);
+  var option;
+  option = {
+    title: [
+      {
+        text: '男女薪资分布',
+        left: 10
+      },
+      {
+        subtext: '男生',
+        left: '50%',
+        top: '45%',
+        textAlign: 'center'
+      },
+
+      {
+        subtext: '女生',
+        left: '50%',
+        top: '90%',
+        textAlign: 'center'
+      }
+    ],
+    color: ['#fda224', '#5097ff', '#3abcfa', '#34d39a'],
+    series: [
+      {
+        type: 'pie',
+        radius: ['20%', '30%'],
+        center: ['50%', '75%'],
+        data: data.salaryData.map(item => {
+          return {
+            value: item.b_count,
+            name: item.label
+          }
+        }),
+        label: {
+          position: 'outer',
+          alignTo: 'none',
+          bleedMargin: 5
+        },
+      },
+
+      {
+        type: 'pie',
+        radius: ['20%', '30%'],
+        center: ['50%', '30%'],
+        data: data.salaryData.map(item => {
+          return {
+            value: item.g_count,
+            name: item.label
+          }
+        }),
+        label: {
+          position: 'outer',
+          alignTo: 'none',
+          margin: 20
+        },
+      }
+    ]
+  };
+
+  option && myChart.setOption(option);
+}
+
+function chinaEcharts(data) {
+  const myEchart = echarts.init(document.querySelector('#map'))
+  const dataList = [
+    { name: '南海诸岛', value: 0 },
+    { name: '北京', value: 0 },
+    { name: '天津', value: 0 },
+    { name: '上海', value: 0 },
+    { name: '重庆', value: 0 },
+    { name: '河北', value: 0 },
+    { name: '河南', value: 0 },
+    { name: '云南', value: 0 },
+    { name: '辽宁', value: 0 },
+    { name: '黑龙江', value: 0 },
+    { name: '湖南', value: 0 },
+    { name: '安徽', value: 0 },
+    { name: '山东', value: 0 },
+    { name: '新疆', value: 0 },
+    { name: '江苏', value: 0 },
+    { name: '浙江', value: 0 },
+    { name: '江西', value: 0 },
+    { name: '湖北', value: 0 },
+    { name: '广西', value: 0 },
+    { name: '甘肃', value: 0 },
+    { name: '山西', value: 0 },
+    { name: '内蒙古', value: 0 },
+    { name: '陕西', value: 0 },
+    { name: '吉林', value: 0 },
+    { name: '福建', value: 0 },
+    { name: '贵州', value: 0 },
+    { name: '广东', value: 0 },
+    { name: '青海', value: 0 },
+    { name: '西藏', value: 0 },
+    { name: '四川', value: 0 },
+    { name: '宁夏', value: 0 },
+    { name: '海南', value: 0 },
+    { name: '台湾', value: 0 },
+    { name: '香港', value: 0 },
+    { name: '澳门', value: 0 },
+  ]
+
+  //数据更新
+  dataList.forEach((item) => {
+    const obj = data.provinceData.find((it) => it.name.replace(/省|回族自治区|维吾尔自治区|壮族自治区|特别行政区|自治区/g, '') === item.name)
+    if (obj) item.value = obj.value
+  })
+  let option = {
+    title: {
+      text: '籍贯分布',
+      top: 10,
+      left: 10,
+      textStyle: {
+        fontSize: 16,
+      },
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: '{b}: {c} 位学员',
+      borderColor: 'transparent',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      textStyle: {
+        color: '#fff',
+      },
+    },
+    visualMap: {
+      min: 0,
+      max: 6,
+      left: 'left',
+      bottom: '20',
+      text: ['6', '0'],
+      inRange: {
+        color: ['#ffffff', '#0075F0'],
+      },
+      show: true,
+      left: 40,
+    },
+    geo: {
+      map: 'china',
+      roam: false,
+      zoom: 1.0,
+      label: {
+        normal: {
+          show: true,
+          fontSize: '10',
+          color: 'rgba(0,0,0,0.7)',
+        },
+      },
+      itemStyle: {
+        normal: {
+          borderColor: 'rgba(0, 0, 0, 0.2)',
+          color: '#e0ffff',
+        },
+        emphasis: {
+          areaColor: '#34D39A',
+          shadowOffsetX: 0,
+          shadowOffsetY: 0,
+          shadowBlur: 20,
+          borderWidth: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)',
+        },
+      },
+    },
+    series: [
+      {
+        name: '籍贯分布',
+        type: 'map',
+        geoIndex: 0,
+        data: dataList,
+      },
+    ],
+  }
+  myEchart.setOption(option)
 }
